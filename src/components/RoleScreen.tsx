@@ -9,7 +9,7 @@ interface RoleScreenProps {
 }
 
 /**
- * Casca de tela comum às 5 funções: cabeçalho com a função ativa,
+ * Casca de tela comum às 7 funções: cabeçalho com a função ativa,
  * lista de seções de dados futuros e um slot opcional para conteúdo
  * específico da função (ex: botões do IGL).
  */

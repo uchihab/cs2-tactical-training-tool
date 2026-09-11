@@ -4,6 +4,11 @@
 export type RoundPhase = "MOMENTO_1" | "MOMENTO_2" | "MOMENTO_3";
 
 /**
+ * Estado do cronômetro do round.
+ */
+export type RoundStatus = "IDLE" | "RUNNING" | "PAUSED" | "FINISHED";
+
+/**
  * Metadados descritivos de cada fase (janela de tempo e objetivo).
  * O tempo é expresso em segundos restantes no relógio do round.
  */

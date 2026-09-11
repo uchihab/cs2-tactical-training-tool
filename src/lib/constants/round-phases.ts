@@ -27,3 +27,14 @@ export const ROUND_PHASES: readonly RoundPhaseInfo[] = [
     objective: "Execução e fechamento.",
   },
 ] as const;
+
+/** Duração total do round, em segundos, derivada do início do Momento 1 (1:55). */
+export const ROUND_DURATION_SECONDS = ROUND_PHASES[0].startTime;
+
+/** Resolve qual fase corresponde a um tempo restante (em segundos). */
+export function getPhaseForTime(time: number): RoundPhaseInfo {
+  return (
+    ROUND_PHASES.find((phase) => time <= phase.startTime && time >= phase.endTime) ??
+    ROUND_PHASES[ROUND_PHASES.length - 1]
+  );
+}

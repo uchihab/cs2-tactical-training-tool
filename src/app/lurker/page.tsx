@@ -1,8 +1,9 @@
+"use client";
+
 import { RoleScreen } from "@/components/RoleScreen";
+import { JoinRoomForm } from "@/components/room/JoinRoomForm";
 
 const SECTIONS = [
-  "Cronômetro",
-  "Fase atual",
   "Área que deve controlar",
   "Posição desejada",
   "Condição para permanecer",
@@ -12,5 +13,9 @@ const SECTIONS = [
 ] as const;
 
 export default function LurkerPage() {
-  return <RoleScreen roleLabel="Lurker" sections={SECTIONS} />;
+  return (
+    <RoleScreen roleLabel="Lurker" sections={SECTIONS}>
+      <JoinRoomForm role="LURKER" roleLabel="Lurker" />
+    </RoleScreen>
+  );
 }

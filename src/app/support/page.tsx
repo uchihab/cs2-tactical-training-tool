@@ -1,8 +1,9 @@
+"use client";
+
 import { RoleScreen } from "@/components/RoleScreen";
+import { JoinRoomForm } from "@/components/room/JoinRoomForm";
 
 const SECTIONS = [
-  "Cronômetro",
-  "Fase atual",
   "Utilitária atual",
   "Local de lançamento",
   "Tipo de lançamento",
@@ -15,5 +16,9 @@ const SECTIONS = [
 ] as const;
 
 export default function SupportPage() {
-  return <RoleScreen roleLabel="Support" sections={SECTIONS} />;
+  return (
+    <RoleScreen roleLabel="Support" sections={SECTIONS}>
+      <JoinRoomForm role="SUPPORT" roleLabel="Support" />
+    </RoleScreen>
+  );
 }

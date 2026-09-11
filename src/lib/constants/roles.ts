@@ -16,4 +16,6 @@ export const ROLE_ROUTES: readonly RoleRouteInfo[] = [
   { role: "ENTRY_2", path: "/entry-2", label: "Entry 2" },
   { role: "SUPPORT", path: "/support", label: "Support" },
   { role: "LURKER", path: "/lurker", label: "Lurker" },
+  { role: "AWP", path: "/awp", label: "AWP" },
+  { role: "ANCORA", path: "/ancora", label: "Âncora" },
 ] as const;
