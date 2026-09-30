@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRoundState } from "./useRoundState";
 import { computeTimeRemaining } from "./useRemoteRound";
-import { useRoomBroadcast } from "./useRoomBroadcast";
+import { useRoomBroadcast, type RoundBroadcastInput } from "./useRoomBroadcast";
 import {
   finishRemoteRound,
   getActiveRound,
@@ -34,7 +34,7 @@ export interface UseIglRoundControllerResult {
 
 const SYNC_FAILURE_MESSAGE = "Falha ao sincronizar. Estado restaurado.";
 
-type CommandName = "START" | "PAUSE" | "RESUME" | "RESET";
+type CommandName = "ROUND_START" | "ROUND_PAUSE" | "ROUND_RESUME" | "ROUND_RESET";
 
 /**
  * Round remoto com controles — uso exclusivo da tela do IGL. Os 4 comandos
@@ -106,7 +106,12 @@ export function useIglRoundController(roomId: string | null): UseIglRoundControl
    * Nunca faz `await` antes da mudança visual.
    */
   const runCommand = useCallback(
-    (name: CommandName, optimisticRound: RoundRecord, remoteCall: () => Promise<RoundRecord>) => {
+    (
+      name: CommandName,
+      optimisticRound: RoundRecord,
+      broadcastInput: RoundBroadcastInput,
+      remoteCall: () => Promise<RoundRecord>,
+    ) => {
       if (pendingCommandRef.current) return; // já existe um comando em voo: ignora o clique
       if (!roomId) return;
 
@@ -114,7 +119,7 @@ export function useIglRoundController(roomId: string | null): UseIglRoundControl
       setIsPending(true);
       setSyncMessage(null);
       setRound(optimisticRound); // 1) Optimistic UI: resposta visual imediata (IGL)
-      sendCommand(name, optimisticRound); // 2) Broadcast: propaga para as outras telas na hora
+      sendCommand(broadcastInput); // 2) Broadcast: propaga para as outras telas na hora
 
       const label = `${name}_REMOTE`;
       console.time(label);
@@ -148,17 +153,32 @@ export function useIglRoundController(roomId: string | null): UseIglRoundControl
   const startRound = useCallback(() => {
     if (!round) return;
 
+    const startedAtIso = new Date().toISOString();
     const optimistic: RoundRecord = {
       ...round,
       status: "RUNNING",
-      started_at: new Date().toISOString(),
+      started_at: startedAtIso,
       paused_at: null,
       finished_at: null,
       time_remaining: ROUND_DURATION_SECONDS,
       current_phase: "MOMENTO_1",
     };
 
-    runCommand("START", optimistic, () => startRemoteRound(round.id));
+    runCommand(
+      "ROUND_START",
+      optimistic,
+      {
+        event: "ROUND_START",
+        payload: {
+          roundId: round.id,
+          startedAt: startedAtIso,
+          timeRemaining: ROUND_DURATION_SECONDS,
+          phase: "MOMENTO_1",
+          status: "RUNNING",
+        },
+      },
+      () => startRemoteRound(round.id),
+    );
   }, [round, runCommand]);
 
   const pauseRound = useCallback(() => {
@@ -172,7 +192,15 @@ export function useIglRoundController(roomId: string | null): UseIglRoundControl
       time_remaining: frozenTimeRemaining,
     };
 
-    runCommand("PAUSE", optimistic, () => pauseRemoteRound(round.id, timeRemaining));
+    runCommand(
+      "ROUND_PAUSE",
+      optimistic,
+      {
+        event: "ROUND_PAUSE",
+        payload: { roundId: round.id, timeRemaining: frozenTimeRemaining, status: "PAUSED" },
+      },
+      () => pauseRemoteRound(round.id, timeRemaining),
+    );
   }, [round, runCommand, timeRemaining]);
 
   const resumeRound = useCallback(() => {
@@ -203,14 +231,26 @@ export function useIglRoundController(roomId: string | null): UseIglRoundControl
       optimisticStartedAt,
     });
 
-    runCommand("RESUME", optimistic, () =>
-      resumeRemoteRound(round.id, pausedTimeRemaining).then((confirmed) => {
-        console.log("RESUME_REMOTE_RESULT", {
-          timeRemaining: confirmed.time_remaining,
-          startedAt: confirmed.started_at,
-        });
-        return confirmed;
-      }),
+    runCommand(
+      "ROUND_RESUME",
+      optimistic,
+      {
+        event: "ROUND_RESUME",
+        payload: {
+          roundId: round.id,
+          startedAt: optimisticStartedAt,
+          timeRemaining: pausedTimeRemaining,
+          status: "RUNNING",
+        },
+      },
+      () =>
+        resumeRemoteRound(round.id, pausedTimeRemaining).then((confirmed) => {
+          console.log("RESUME_REMOTE_RESULT", {
+            timeRemaining: confirmed.time_remaining,
+            startedAt: confirmed.started_at,
+          });
+          return confirmed;
+        }),
     );
   }, [round, runCommand, timeRemaining]);
 
@@ -227,7 +267,20 @@ export function useIglRoundController(roomId: string | null): UseIglRoundControl
       current_phase: "MOMENTO_1",
     };
 
-    runCommand("RESET", optimistic, () => resetRemoteRound(round.id));
+    runCommand(
+      "ROUND_RESET",
+      optimistic,
+      {
+        event: "ROUND_RESET",
+        payload: {
+          roundId: round.id,
+          timeRemaining: ROUND_DURATION_SECONDS,
+          phase: "MOMENTO_1",
+          status: "IDLE",
+        },
+      },
+      () => resetRemoteRound(round.id),
+    );
   }, [round, runCommand]);
 
   return {

@@ -12,10 +12,10 @@ const SECTIONS = [
   "Comando HOLD ou GO",
 ] as const;
 
-export default function AwpPage() {
+export default function AwperPage() {
   return (
-    <RoleScreen roleLabel="AWP" sections={SECTIONS}>
-      <JoinRoomForm role="AWP" roleLabel="AWP" />
+    <RoleScreen roleLabel="AWPer" sections={SECTIONS}>
+      <JoinRoomForm />
     </RoleScreen>
   );
 }

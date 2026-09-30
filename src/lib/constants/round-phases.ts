@@ -2,28 +2,46 @@ import type { RoundPhaseInfo } from "@/types";
 
 /**
  * Definição estática dos 3 momentos do round.
- * Tempo em segundos restantes no relógio (1:55 -> 115s, 1:25 -> 85s, 0:55 -> 55s, 0:00 -> 0s).
+ *
+ * Regra oficial (em tempo de relógio):
+ *   MOMENTO_1: 1:55 até 0:59
+ *   MOMENTO_2: 0:59 até 0:30
+ *   MOMENTO_3: 0:30 até os segundos finais (segue até o plant)
+ *
+ * Implementado com thresholds em segundos restantes que não se sobrepõem
+ * (para nunca deixar ambíguo a quem pertence um segundo exato):
+ *   MOMENTO_1: 115 até 60
+ *   MOMENTO_2: 59 até 31
+ *   MOMENTO_3: 30 até 0
+ *
+ * MOMENTO_3 não termina conceitualmente em 0:00 — cobre os segundos finais
+ * até o plant. Um estado de pós-plant (POST_PLANT_PHASE) é um conceito
+ * futuro, ainda não implementado: nesta etapa, MOMENTO_3 simplesmente
+ * permanece até o fim do round.
  */
 export const ROUND_PHASES: readonly RoundPhaseInfo[] = [
   {
     id: "MOMENTO_1",
     label: "Momento 1",
     startTime: 115,
-    endTime: 85,
+    endTime: 60,
+    range: "1:55 → 0:59",
     objective: "Domínio inicial e coleta de informação.",
   },
   {
     id: "MOMENTO_2",
     label: "Momento 2",
-    startTime: 85,
-    endTime: 55,
+    startTime: 59,
+    endTime: 31,
+    range: "0:59 → 0:30",
     objective: "Pressão, leitura, preparação e decisão.",
   },
   {
     id: "MOMENTO_3",
     label: "Momento 3",
-    startTime: 55,
+    startTime: 30,
     endTime: 0,
+    range: "0:30 → segundos finais / até o plant",
     objective: "Execução e fechamento.",
   },
 ] as const;

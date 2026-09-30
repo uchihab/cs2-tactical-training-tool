@@ -26,6 +26,10 @@ const RELEVANT_FIELDS = [
   "finished_at",
   "time_remaining",
   "current_phase",
+  "map_id",
+  "side",
+  "strategy_id",
+  "setup_id",
 ] as const satisfies readonly (keyof RoundRecord)[];
 
 /** Só considera "diferente" quando algum campo que afeta a exibição realmente muda. */

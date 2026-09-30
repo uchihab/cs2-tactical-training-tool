@@ -17,5 +17,7 @@ export interface RoundPhaseInfo {
   label: string;
   startTime: number;
   endTime: number;
+  /** Faixa de tempo em formato de relógio, para exibição (ex: "1:55 → 0:59"). */
+  range: string;
   objective: string;
 }

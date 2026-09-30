@@ -20,6 +20,13 @@ export default function Home() {
           </Link>
         ))}
       </nav>
+
+      <Link
+        href="/playbook"
+        className="rounded-lg border border-emerald-700 bg-emerald-900/40 px-4 py-3 text-center text-sm font-semibold text-emerald-300"
+      >
+        PLAYBOOK (Coach/IGL)
+      </Link>
     </main>
   );
 }

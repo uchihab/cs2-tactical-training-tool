@@ -1,6 +1,6 @@
 import { createClient } from "./client";
 import { ROUND_DURATION_SECONDS } from "@/lib/constants/round-phases";
-import type { RoundPhase, RoundRecord } from "@/types";
+import type { RoundPhase, RoundRecord, Side } from "@/types";
 
 interface SupabaseErrorLike {
   message: string;
@@ -134,4 +134,42 @@ export async function finishRemoteRound(roundId: string): Promise<RoundRecord> {
 /** IGL: grava a fase atual, apenas quando ela muda (nunca a cada tick). */
 export async function updateRoundPhase(roundId: string, phase: RoundPhase): Promise<RoundRecord> {
   return updateRound(roundId, { current_phase: phase });
+}
+
+export interface ActivateRoundSetupInput {
+  roundId: string;
+  mapId: string;
+  side: Side;
+  strategyId: string;
+  setupId: string;
+}
+
+/**
+ * IGL: ativa MAPA -> LADO -> ESTRATÉGIA -> SETUP no round, num único UPDATE.
+ * Independente do cronômetro de propósito — nunca toca status/started_at/
+ * paused_at/finished_at/time_remaining/current_phase, então pode ser chamado
+ * com o round RUNNING sem afetar o timer. Players conectados recebem a
+ * mudança de `setup_id` pelo mesmo Realtime que já sincroniza `rounds`.
+ */
+export async function activateRoundSetup(input: ActivateRoundSetupInput): Promise<RoundRecord> {
+  const supabase = createClient();
+
+  const { data, error } = await supabase
+    .from("rounds")
+    .update({
+      map_id: input.mapId,
+      side: input.side,
+      strategy_id: input.strategyId,
+      setup_id: input.setupId,
+    })
+    .eq("id", input.roundId)
+    .select()
+    .single();
+
+  if (error) {
+    logRoundError("ACTIVATE ROUND SETUP ERROR", error);
+    throw new Error("Não foi possível ativar o setup.");
+  }
+
+  return data as RoundRecord;
 }

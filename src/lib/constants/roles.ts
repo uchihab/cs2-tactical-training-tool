@@ -12,10 +12,9 @@ export interface RoleRouteInfo {
 
 export const ROLE_ROUTES: readonly RoleRouteInfo[] = [
   { role: "IGL", path: "/igl", label: "IGL" },
-  { role: "ENTRY_1", path: "/entry-1", label: "Entry 1" },
-  { role: "ENTRY_2", path: "/entry-2", label: "Entry 2" },
-  { role: "SUPPORT", path: "/support", label: "Support" },
-  { role: "LURKER", path: "/lurker", label: "Lurker" },
-  { role: "AWP", path: "/awp", label: "AWP" },
-  { role: "ANCORA", path: "/ancora", label: "Âncora" },
+  { role: "AWPER", path: "/awper", label: "AWPer" },
+  { role: "ANCHOR", path: "/anchor", label: "Anchor" },
+  { role: "ENTRY_FRAGGER", path: "/entry-fragger", label: "Entry-Fragger" },
+  { role: "RIFLER", path: "/rifler", label: "Rifler" },
+  { role: "SUPORTE", path: "/suporte", label: "Suporte" },
 ] as const;

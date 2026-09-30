@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { RoleScreen } from "@/components/RoleScreen";
 import { RoundTimer } from "@/components/round/RoundTimer";
+import { TacticalSetupControl } from "@/components/igl/TacticalSetupControl";
 import { useIglRoundController } from "@/hooks/useIglRoundController";
 import { checkSupabaseHealth, type SupabaseHealthResult } from "@/lib/supabase/health";
 import { createTeamRoomWithInitialRound } from "@/lib/supabase/rooms";
@@ -51,6 +52,7 @@ export default function IglPage() {
   }
 
   const {
+    round,
     timeRemaining,
     status,
     phase,
@@ -148,6 +150,8 @@ export default function IglPage() {
               RESET
             </button>
           </div>
+
+          {round && <TacticalSetupControl round={round} />}
         </>
       )}
 

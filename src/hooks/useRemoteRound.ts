@@ -2,9 +2,63 @@
 
 import { useMemo } from "react";
 import { useRoundState } from "./useRoundState";
-import { useRoomBroadcast } from "./useRoomBroadcast";
+import { useRoomBroadcast, type RoundBroadcastMessage } from "./useRoomBroadcast";
 import { ROUND_DURATION_SECONDS, getPhaseForTime } from "@/lib/constants/round-phases";
 import type { RoundPhaseInfo, RoundRecord, RoundStatus } from "@/types";
+
+/**
+ * Aplica um comando recebido por Broadcast sobre o round conhecido
+ * localmente. O payload do Broadcast é intencionalmente enxuto (só os campos
+ * que aquele comando muda — ver useRoomBroadcast), então isto é sempre um
+ * merge sobre o último round conhecido, nunca uma substituição completa.
+ * Sem round local ainda (ex: broadcast chegou antes da busca inicial), a
+ * mensagem é ignorada — a busca inicial e o postgres_changes cobrem o caso.
+ */
+function applyBroadcastToRound(
+  round: RoundRecord | null,
+  message: RoundBroadcastMessage,
+): RoundRecord | null {
+  if (!round) return round;
+
+  switch (message.event) {
+    case "ROUND_START":
+      return {
+        ...round,
+        status: message.payload.status,
+        started_at: message.payload.startedAt,
+        paused_at: null,
+        finished_at: null,
+        time_remaining: message.payload.timeRemaining,
+        current_phase: message.payload.phase,
+      };
+    case "ROUND_PAUSE":
+      return {
+        ...round,
+        status: message.payload.status,
+        time_remaining: message.payload.timeRemaining,
+      };
+    case "ROUND_RESUME":
+      return {
+        ...round,
+        status: message.payload.status,
+        started_at: message.payload.startedAt,
+        paused_at: null,
+        time_remaining: message.payload.timeRemaining,
+      };
+    case "ROUND_RESET":
+      return {
+        ...round,
+        status: message.payload.status,
+        started_at: null,
+        paused_at: null,
+        finished_at: null,
+        time_remaining: message.payload.timeRemaining,
+        current_phase: message.payload.phase,
+      };
+    default:
+      return round;
+  }
+}
 
 export interface UseRemoteRoundResult {
   round: RoundRecord | null;
@@ -38,7 +92,7 @@ export function useRemoteRound(roomId: string | null): UseRemoteRoundResult {
   // postgres_changes — que ainda chega logo depois e reconcilia com o dado
   // definitivo do banco (ex: started_at exato gravado no servidor).
   useRoomBroadcast(roomId, {
-    onReceive: (message) => setRound(message.round),
+    onReceive: (message) => setRound(applyBroadcastToRound(round, message)),
   });
 
   // Sem sala selecionada, não há round: reporta o estado de repouso sem

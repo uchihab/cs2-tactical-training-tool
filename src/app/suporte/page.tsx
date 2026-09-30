@@ -15,10 +15,10 @@ const SECTIONS = [
   "Molotov restante",
 ] as const;
 
-export default function SupportPage() {
+export default function SuportePage() {
   return (
-    <RoleScreen roleLabel="Support" sections={SECTIONS}>
-      <JoinRoomForm role="SUPPORT" roleLabel="Support" />
+    <RoleScreen roleLabel="Suporte" sections={SECTIONS}>
+      <JoinRoomForm />
     </RoleScreen>
   );
 }

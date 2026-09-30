@@ -43,7 +43,9 @@ export function RoundTimer({ timeRemaining, status, phase }: RoundTimerProps) {
         <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
           Momento/fase atual
         </p>
-        <p className="mt-1 text-sm font-semibold text-zinc-100">{phase.label}</p>
+        <p className="mt-1 text-sm font-semibold text-zinc-100">
+          {phase.label} <span className="text-zinc-500">({phase.range})</span>
+        </p>
         <p className="mt-1 text-sm text-zinc-400">{phase.objective}</p>
       </div>
     </div>

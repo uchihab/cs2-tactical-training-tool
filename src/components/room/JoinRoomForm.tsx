@@ -2,22 +2,22 @@
 
 import { useState, type FormEvent } from "react";
 import { RoundTimer } from "@/components/round/RoundTimer";
+import { TacticalContextPanel } from "@/components/room/TacticalContextPanel";
 import { useRemoteRound } from "@/hooks/useRemoteRound";
+import { usePlayerTacticalContext } from "@/hooks/usePlayerTacticalContext";
 import { joinRoom, type JoinRoomResult } from "@/lib/supabase/players";
-import type { PlayerRole } from "@/types";
-
-interface JoinRoomFormProps {
-  role: PlayerRole;
-  roleLabel: string;
-}
 
 /**
- * Porta de entrada de uma sala para uma função fixa (ENTRY_1, SUPPORT, etc).
- * Antes de conectar, mostra o formulário de código + nickname; depois, mostra
- * o status da conexão e o cronômetro/fase do round da sala, sincronizados
- * via Supabase Realtime (somente leitura — nenhum controle aqui).
+ * Porta de entrada de uma sala. Entrar cria/reconecta só PLAYER IDENTITY +
+ * ROOM (room_id + nickname + connected) — nenhuma função é gravada aqui. A
+ * função operacional exibida depois de conectar vem só do setup ativo do
+ * round, via `usePlayerTacticalContext` (MAP -> SIDE -> STRATEGY -> SETUP ->
+ * SETUP_ASSIGNMENT). Antes de conectar, mostra o formulário de código +
+ * nickname; depois, mostra o contexto tático e o cronômetro/fase do round da
+ * sala, sincronizados via Supabase Realtime (somente leitura — nenhum
+ * controle aqui).
  */
-export function JoinRoomForm({ role, roleLabel }: JoinRoomFormProps) {
+export function JoinRoomForm() {
   const [code, setCode] = useState("");
   const [nickname, setNickname] = useState("");
   const [loading, setLoading] = useState(false);
@@ -27,11 +27,18 @@ export function JoinRoomForm({ role, roleLabel }: JoinRoomFormProps) {
   const canSubmit = code.trim().length > 0 && nickname.trim().length > 0;
 
   const {
+    round,
     timeRemaining,
     status: roundStatus,
     phase,
     error: roundError,
   } = useRemoteRound(session?.room.id ?? null);
+
+  const tacticalContext = usePlayerTacticalContext(
+    session?.room.id ?? null,
+    session?.player.id ?? null,
+    round?.current_phase ?? null,
+  );
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -40,7 +47,7 @@ export function JoinRoomForm({ role, roleLabel }: JoinRoomFormProps) {
     setLoading(true);
     setError(null);
     try {
-      const result = await joinRoom({ code, nickname, role });
+      const result = await joinRoom({ code, nickname });
       setSession(result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Não foi possível entrar na sala. Tente novamente.");
@@ -59,9 +66,6 @@ export function JoinRoomForm({ role, roleLabel }: JoinRoomFormProps) {
           <p className="mt-2 text-xs uppercase tracking-wide text-zinc-500">Player:</p>
           <p className="text-sm text-zinc-200">{session.player.nickname}</p>
 
-          <p className="mt-2 text-xs uppercase tracking-wide text-zinc-500">Função:</p>
-          <p className="text-sm text-zinc-200">{roleLabel.toUpperCase()}</p>
-
           <p className="mt-2 text-xs uppercase tracking-wide text-zinc-500">Status:</p>
           <p className="text-sm font-semibold text-emerald-400">CONECTADO</p>
         </div>
@@ -69,6 +73,8 @@ export function JoinRoomForm({ role, roleLabel }: JoinRoomFormProps) {
         {roundError && <p className="text-xs text-red-400">{roundError}</p>}
 
         <RoundTimer timeRemaining={timeRemaining} status={roundStatus} phase={phase} />
+
+        <TacticalContextPanel {...tacticalContext} />
       </div>
     );
   }

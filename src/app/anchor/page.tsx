@@ -12,10 +12,10 @@ const SECTIONS = [
   "Comando HOLD ou ROTATE",
 ] as const;
 
-export default function AncoraPage() {
+export default function AnchorPage() {
   return (
-    <RoleScreen roleLabel="Âncora" sections={SECTIONS}>
-      <JoinRoomForm role="ANCORA" roleLabel="Âncora" />
+    <RoleScreen roleLabel="Anchor" sections={SECTIONS}>
+      <JoinRoomForm />
     </RoleScreen>
   );
 }

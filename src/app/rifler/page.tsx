@@ -5,16 +5,16 @@ import { JoinRoomForm } from "@/components/room/JoinRoomForm";
 
 const SECTIONS = [
   "Instrução principal",
-  "Objetivo imediato",
-  "Gatilho para entrada",
-  "Utilitária que deve aguardar",
+  "Quando acompanhar Entry-Fragger",
+  "Gatilho para trade",
+  "Área que deve limpar",
   "Status HOLD ou GO",
 ] as const;
 
-export default function Entry1Page() {
+export default function RiflerPage() {
   return (
-    <RoleScreen roleLabel="Entry 1" sections={SECTIONS}>
-      <JoinRoomForm role="ENTRY_1" roleLabel="Entry 1" />
+    <RoleScreen roleLabel="Rifler" sections={SECTIONS}>
+      <JoinRoomForm />
     </RoleScreen>
   );
 }
