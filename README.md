@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# CS2 Tactical Training Tool
 
-## Getting Started
+A full-stack web application designed to help competitive Counter-Strike 2 teams organize strategies, player responsibilities, tactical setups, and structured training sessions.
 
-First, run the development server:
+This project is part of my software development portfolio and focuses on solving a real team-coordination problem through a modern web application.
+
+## Features
+
+- Strategy organization by map and side
+- Tactical setups and strategic variations
+- Player roles and assignments
+- Round-phase workflow support
+- Team training structure
+- Persistent data with Supabase
+- Responsive interface for practical team use
+
+## Tech Stack
+
+- TypeScript
+- Next.js
+- React
+- Supabase
+- Tailwind CSS
+- ESLint
+
+## Project Goals
+
+The goal is to create a practical tactical management platform where an IGL or coach can build, edit, and execute team strategies without relying on static documents.
+
+The application is being developed around reusable strategy data, player assignments, round phases, and configurable workflows.
+
+## Local Development
+
+Clone the repository:
+
+```bash
+git clone https://github.com/uchihab/cs2-tactical-training-tool.git
+cd cs2-tactical-training-tool
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+Create the required Supabase environment variables in your local environment.
+
+Run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```text
+http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Available Scripts
 
-## Learn More
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Roadmap
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Complete authentication and user roles
+- Strategy creation and editing workflows
+- Map / side configuration
+- Player assignment management
+- Tactical timing and round phases
+- Training-session execution mode
+- Testing and validation
+- Production deployment
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Author
 
-## Deploy on Vercel
+**César Augusto Souza de Brito**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Software Developer focused on web applications, AI, automation, and data-driven systems.
